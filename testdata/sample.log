@@ -1,0 +1,63 @@
+2026-10-20T08:00:00Z INFO api-gateway Service started on port 8080
+2026-10-20T08:00:01Z INFO auth-service Service started on port 9000
+2026-10-20T08:00:02Z INFO payment-service Service started on port 9100
+2026-10-20T08:00:03Z INFO order-service Service started on port 9200
+2026-10-20T08:00:04Z INFO inventory-service Service started on port 9300
+2026-10-20T08:01:10Z INFO api-gateway GET /orders 200 12ms
+2026-10-20T08:01:12Z INFO order-service Order 1001 created
+2026-10-20T08:01:15Z INFO payment-service Payment 5001 authorized
+2026-10-20T08:02:00Z WARN api-gateway Slow response from order-service: 1450ms
+
+# Burst 1: database failures in payment-service (08:05 - 08:07)
+2026-10-20T08:05:00Z ERROR payment-service Database connection refused: postgres:5432
+2026-10-20T08:05:20Z ERROR payment-service Database connection refused: postgres:5432
+2026-10-20T08:05:45Z ERROR payment-service Query failed: deadlock detected on table payments
+2026-10-20T08:06:30Z ERROR payment-service Database connection refused: postgres:5432
+2026-10-20T08:07:10Z INFO payment-service Database connection restored
+
+# Timeouts in order-service (overlap: "timeout" + "database" on an ERROR line)
+2026-10-20T08:08:00Z WARN order-service Request timeout calling inventory-service after 30s
+2026-10-20T08:08:05Z WARN order-service Request timeout calling inventory-service after 30s
+2026-10-20T08:08:20Z ERROR order-service Database query timed out after 5000ms
+2026-10-20T08:08:40Z WARN order-service Upstream timed out: inventory-service
+
+# Authentication failures
+2026-10-20T08:10:00Z WARN auth-service Authentication failed for user alice from 10.0.0.12
+2026-10-20T08:10:02Z WARN auth-service Authentication failed for user alice from 10.0.0.12
+2026-10-20T08:10:04Z WARN auth-service Authentication failed for user alice from 10.0.0.12
+2026-10-20T08:10:30Z WARN api-gateway Unauthorized request to /admin from 203.0.113.7
+2026-10-20T08:11:00Z ERROR auth-service Permission denied: token expired for user bob
+
+# Malformed lines (counted, never fatal)
+this line is not a log entry at all
+2026-10-20 08:12:00 ERROR payment-service Timestamp has a space instead of T
+2026-10-20T08:12:30Z CRITICAL payment-service Unknown severity level
+2026-10-20T08:12:45Z ERROR
+2026-10-20T08:12:50Z DEBUG api-gateway Debug is not a supported level
+not-a-time INFO api-gateway Bad timestamp
+
+# Generic errors (catch-all rule)
+2026-10-20T08:15:00Z ERROR inventory-service Failed to parse SKU "AB-12"
+2026-10-20T08:15:10Z ERROR inventory-service Failed to parse SKU "CD-34"
+2026-10-20T08:16:00Z ERROR api-gateway Upstream returned 502 Bad Gateway
+
+# Crash: out of memory + FATAL (overlap: FATAL line that also mentions memory)
+2026-10-20T08:20:00Z ERROR inventory-service Out of memory: cannot allocate 512MB buffer
+2026-10-20T08:20:05Z ERROR inventory-service Out of memory: cannot allocate 512MB buffer
+2026-10-20T08:20:06Z FATAL inventory-service Process killed: out of memory
+2026-10-20T08:20:30Z INFO inventory-service Service started on port 9300
+
+# Burst 2: database failures again, more than 5 minutes after burst 1 -> separate incident
+2026-10-20T08:30:00Z ERROR payment-service Database connection refused: postgres:5432
+2026-10-20T08:30:15Z ERROR payment-service Database connection refused: postgres:5432
+2026-10-20T08:30:20Z FATAL payment-service Cannot reach database after 10 retries, shutting down
+2026-10-20T08:31:00Z INFO payment-service Service started on port 9100
+
+# Normal traffic
+2026-10-20T08:32:00Z INFO api-gateway GET /health 200 1ms
+2026-10-20T08:32:10Z INFO order-service Order 1002 created
+2026-10-20T08:32:12Z INFO payment-service Payment 5002 authorized
+2026-10-20T08:32:15Z INFO inventory-service Stock reserved for order 1002
+2026-10-20T08:33:00Z WARN inventory-service Low stock for SKU AB-12: 3 left
+2026-10-20T08:34:00Z INFO api-gateway GET /orders 200 9ms
+2026-10-20T08:35:00Z INFO order-service Order 1002 shipped
