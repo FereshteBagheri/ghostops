@@ -1,12 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+
+	"ghostops/linescan"
 )
 
 const (
@@ -15,32 +16,29 @@ const (
 	exitUsage = 2
 )
 
-func countLines(path string) (int, error) {
+func openLog(path string) (*os.File, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-
-	defer f.Close()
 
 	info, err := f.Stat()
 	if err != nil {
-		return 0, fmt.Errorf("stat %s: %w", path, err)
+		f.Close()
+		return nil, fmt.Errorf("stat %s: %w", path, err)
 	}
 	if info.IsDir() {
-		return 0, fmt.Errorf("%s is a directory, not a log file", path)
+		f.Close()
+		return nil, fmt.Errorf("%s is a directory, not a log file", path)
 	}
+	return f, nil
+}
 
-	scanner := bufio.NewScanner(f)
-	n := 0
-	for scanner.Scan() {
-		n++
+func countLines(r io.Reader) (int, error) {
+	s := linescan.New(r, 0)
+	for s.Scan() {
 	}
-
-	if err := scanner.Err(); err != nil {
-		return n, fmt.Errorf("read %s at line %d: %w", path, n+1, err)
-	}
-	return n, nil
+	return s.Line(), s.Err()
 }
 
 func run(args []string, stdout, stderr io.Writer) int {
@@ -67,9 +65,16 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 	logPath := fs.Arg(0)
 
-	n, err := countLines(logPath)
+	f, err := openLog(logPath)
 	if err != nil {
 		fmt.Fprintf(stderr, "ghostops: %v\n", err)
+		return exitError
+	}
+	defer f.Close()
+
+	n, err := countLines(f)
+	if err != nil {
+		fmt.Fprintf(stderr, "ghostops: read %s: %v\n", logPath, err)
 		return exitError
 	}
 
