@@ -1,0 +1,107 @@
+package analysis
+
+import (
+	"cmp"
+	"errors"
+	"slices"
+
+	"ghostops/logentry"
+)
+
+const maxMalformedExamples = 5
+
+var malformedReasons = []error{
+	logentry.ErrMissingFields,
+	logentry.ErrBadTimestamp,
+	logentry.ErrUnknownLevel,
+}
+
+type Count struct {
+	Name  string
+	Count int
+}
+
+type Stats struct {
+	Lines     int
+	Valid     int
+	Skipped   int
+	Malformed int
+
+	byLevel           map[logentry.Level]int
+	byService         map[string]int
+	malformedByReason map[string]int
+	malformedExamples []string
+}
+
+func NewStats() *Stats {
+	return &Stats{
+		byLevel:           make(map[logentry.Level]int),
+		byService:         make(map[string]int),
+		malformedByReason: make(map[string]int),
+		malformedExamples: make([]string, 0, maxMalformedExamples),
+	}
+}
+
+func (s *Stats) AddEntry(e logentry.Entry) {
+	s.Lines++
+	s.Valid++
+	s.byLevel[e.Level]++
+	s.byService[e.Service]++
+}
+
+func (s *Stats) AddSkipped() {
+	s.Lines++
+	s.Skipped++
+}
+
+func (s *Stats) AddMalformed(err error) {
+	s.Lines++
+	s.Malformed++
+	s.malformedByReason[reason(err)]++
+	if len(s.malformedExamples) < maxMalformedExamples {
+		s.malformedExamples = append(s.malformedExamples, err.Error())
+	}
+}
+
+func (s *Stats) Levels() []Count {
+	counts := make([]Count, 0, len(logentry.Levels()))
+	for _, l := range logentry.Levels() {
+		counts = append(counts, Count{Name: l.String(), Count: s.byLevel[l]})
+	}
+	return counts
+}
+
+func (s *Stats) Services() []Count {
+	return sortedCounts(s.byService)
+}
+
+func (s *Stats) MalformedReasons() []Count {
+	return sortedCounts(s.malformedByReason)
+}
+
+func (s *Stats) MalformedExamples() []string {
+	return slices.Clone(s.malformedExamples)
+}
+
+func reason(err error) string {
+	for _, r := range malformedReasons {
+		if errors.Is(err, r) {
+			return r.Error()
+		}
+	}
+	return "other"
+}
+
+func sortedCounts(m map[string]int) []Count {
+	counts := make([]Count, 0, len(m))
+	for name, n := range m {
+		counts = append(counts, Count{Name: name, Count: n})
+	}
+	slices.SortFunc(counts, func(a, b Count) int {
+		if c := cmp.Compare(b.Count, a.Count); c != 0 {
+			return c
+		}
+		return cmp.Compare(a.Name, b.Name)
+	})
+	return counts
+}
