@@ -1,0 +1,19 @@
+GhostOps report for testdata/empty.log
+
+Lines: 0 total, 0 valid, 0 malformed, 0 blank or comment
+No valid entries.
+
+Levels
+  INFO   0
+  WARN   0
+  ERROR  0
+  FATAL  0
+
+Services
+  (none)
+
+Incidents
+  No incidents detected.
+
+Anomalies (compared with each service's own history, 1m buckets)
+  Nothing to learn from.

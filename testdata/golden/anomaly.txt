@@ -1,0 +1,101 @@
+GhostOps report for testdata/anomaly.log
+Entries from 2026-10-20 08:00:00 to 09:59:59 UTC (1h59m59s)
+
+Lines: 4897 total, 4897 valid, 0 malformed, 0 blank or comment
+
+Service health (0-100, worst first)
+  payment-service     32  critical   1277 entries  85 errors   6.7%  9 incidents  1 anomaly    (-13 errors, -45 incidents, -10 anomalies)
+  order-service       52  unhealthy  1161 entries  11 errors   0.9%  7 incidents  1 anomaly    (-2 errors, -36 incidents, -10 anomalies)
+  api-gateway         64  unhealthy  1243 entries  8 errors    0.6%  5 incidents  1 anomaly    (-1 errors, -25 incidents, -10 anomalies)
+  inventory-service   79  degraded   1216 entries  6 errors    0.5%  5 incidents  0 anomalies  (-1 errors, -20 incidents)
+
+Levels
+  INFO   4552
+  WARN    235
+  ERROR   110
+  FATAL     0
+
+Services
+  payment-service    1277
+  api-gateway        1243
+  inventory-service  1216
+  order-service      1161
+
+Incidents: 26 from 110 entries (87 entries matched more than one rule; the first rule wins)
+  HIGH      database-failure  payment-service    75 entries  09:10:03 - 09:12:59  2m56s  line 2854
+            Database connection refused: postgres:5432
+  MEDIUM    timeout           api-gateway        1 entry     08:21:35 - 08:21:35  0s     line 867
+            Request timeout after 8651ms
+  MEDIUM    timeout           payment-service    1 entry     08:23:13 - 08:23:13  0s     line 936
+            Request timeout after 6953ms
+  MEDIUM    timeout           inventory-service  2 entries   08:35:27 - 08:40:12  4m45s  line 1440
+            Request timeout after 6266ms
+            Request timeout after 21800ms
+  MEDIUM    timeout           order-service      1 entry     08:42:04 - 08:42:04  0s     line 1732
+            Request timeout after 25188ms
+  MEDIUM    timeout           payment-service    1 entry     09:00:05 - 09:00:05  0s     line 2458
+            Request timeout after 755ms
+  MEDIUM    timeout           order-service      3 entries   09:24:24 - 09:31:57  7m33s  line 3512
+            Request timeout after 28737ms
+            Request timeout after 25453ms
+            Request timeout after 8968ms
+  MEDIUM    timeout           api-gateway        1 entry     09:52:59 - 09:52:59  0s     line 4608
+            Request timeout after 23758ms
+  MEDIUM    timeout           order-service      1 entry     09:54:44 - 09:54:44  0s     line 4680
+            Request timeout after 11001ms
+  MEDIUM    timeout           payment-service    1 entry     09:58:46 - 09:58:46  0s     line 4844
+            Request timeout after 22957ms
+  LOW       error-burst       inventory-service  1 entry     08:01:35 - 08:01:35  0s     line 69
+            Failed to parse SKU 3294
+  LOW       error-burst       order-service      3 entries   08:24:13 - 08:26:39  2m26s  line 979
+            Failed to parse SKU 84
+            Failed to parse SKU 3167
+            Upstream returned 502 Bad Gateway after 2451ms
+  LOW       error-burst       inventory-service  1 entry     08:30:15 - 08:30:15  0s     line 1221
+            Failed to parse SKU 6676
+  LOW       error-burst       api-gateway        2 entries   08:30:49 - 08:32:38  1m49s  line 1252
+            Failed to parse SKU 6948
+            Upstream returned 502 Bad Gateway after 489ms
+  LOW       error-burst       order-service      1 entry     08:45:27 - 08:45:27  0s     line 1871
+            Upstream returned 502 Bad Gateway after 2665ms
+  LOW       error-burst       payment-service    2 entries   08:47:18 - 08:50:26  3m8s   line 1956
+            Failed to parse SKU 1100
+            Failed to parse SKU 6139
+  LOW       error-burst       inventory-service  1 entry     08:47:25 - 08:47:25  0s     line 1960
+            Upstream returned 502 Bad Gateway after 622ms
+  LOW       error-burst       order-service      1 entry     09:15:47 - 09:15:47  0s     line 3166
+            Upstream returned 502 Bad Gateway after 2115ms
+  LOW       error-burst       api-gateway        3 entries   09:24:56 - 09:28:16  3m20s  line 3536
+            Failed to parse SKU 1017
+            Failed to parse SKU 624
+            Failed to parse SKU 1725
+  LOW       error-burst       payment-service    1 entry     09:25:31 - 09:25:31  0s     line 3560
+            Upstream returned 502 Bad Gateway after 758ms
+  LOW       error-burst       api-gateway        1 entry     09:33:38 - 09:33:38  0s     line 3889
+            Failed to parse SKU 2112
+  LOW       error-burst       payment-service    1 entry     09:39:44 - 09:39:44  0s     line 4082
+            Failed to parse SKU 6803
+  LOW       error-burst       inventory-service  1 entry     09:44:20 - 09:44:20  0s     line 4265
+            Failed to parse SKU 3682
+  LOW       error-burst       payment-service    1 entry     09:48:29 - 09:48:29  0s     line 4430
+            Upstream returned 502 Bad Gateway after 1761ms
+  LOW       error-burst       payment-service    2 entries   09:54:52 - 09:55:06  14s    line 4688
+            Failed to parse SKU 3646
+            Upstream returned 502 Bad Gateway after 340ms
+  LOW       error-burst       order-service      1 entry     09:59:49 - 09:59:49  0s     line 4887
+            Upstream returned 502 Bad Gateway after 1164ms
+
+Timeline from 08:00:00 to 10:00:00, one column = 2m (first row: all entries, then errors per service)
+  (all entries)      ▆▆▆▅▆▅▅▅▆▆▅▆▅▆▅▆▆▅▅▅█▆▅▆▆▆▆▅▅▅▅▆▆▆▅█▇▆▅▅▆▆▅▆▅▆▅▅▄▄▅▆▆▅▅▆▅▆▆▅  max 129
+  api-gateway        ··········▄····▄▄·························█·▄·▄·········▄···  max 2
+  inventory-service  █··············█·█··█··█····························█·······  max 1
+  order-service      ············█▄·······▄▄··············▄····▄▄·▄···········▄·▄  max 2
+  payment-service    ···········▁···········▁·▁····▁····█▄·····▁······▁····▁··▁·▁  max 50
+
+Anomalies (compared with each service's own history, 1m buckets)
+  4 of 4 services had enough history.
+  volume-spike  (all services)   08:40 - 08:41  peak 84 per bucket, normally 39.9 ± 2.9 (z=15.3)
+  volume-spike  api-gateway      08:40 - 08:41  peak 54 per bucket, normally 9.9 ± 1.4 (z=30.9)
+  error-spike   (all services)   09:10 - 09:13  peak 25 per bucket, normally 0.2 ± 0.5 (z=24.8)
+  error-spike   payment-service  09:10 - 09:13  peak 25 per bucket, normally 0.1 ± 0.2 (z=24.9)
+  silence       order-service    09:35 - 09:41  no logs, normally 10.1 per bucket

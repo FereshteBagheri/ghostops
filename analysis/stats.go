@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"errors"
 	"slices"
+	"time"
 
 	"ghostops/logentry"
 )
@@ -26,9 +27,15 @@ type Stats struct {
 	Valid     int
 	Skipped   int
 	Malformed int
+	Filtered  int
+
+	// time of the earliest and latest valid entry
+	First time.Time
+	Last  time.Time
 
 	byLevel           map[logentry.Level]int
 	byService         map[string]int
+	errorsByService   map[string]int
 	malformedByReason map[string]int
 	malformedExamples []string
 }
@@ -37,16 +44,31 @@ func NewStats() *Stats {
 	return &Stats{
 		byLevel:           make(map[logentry.Level]int),
 		byService:         make(map[string]int),
+		errorsByService:   make(map[string]int),
 		malformedByReason: make(map[string]int),
 		malformedExamples: make([]string, 0, maxMalformedExamples),
 	}
 }
 
-func (s *Stats) AddEntry(e logentry.Entry) {
+func (s *Stats) Observe(e logentry.Entry) {
 	s.Lines++
 	s.Valid++
 	s.byLevel[e.Level]++
 	s.byService[e.Service]++
+	if e.Level >= logentry.Error {
+		s.errorsByService[e.Service]++
+	}
+	if s.First.IsZero() || e.Time.Before(s.First) {
+		s.First = e.Time
+	}
+	if e.Time.After(s.Last) {
+		s.Last = e.Time
+	}
+}
+
+func (s *Stats) AddFiltered() {
+	s.Lines++
+	s.Filtered++
 }
 
 func (s *Stats) AddSkipped() {
@@ -73,6 +95,11 @@ func (s *Stats) Levels() []Count {
 
 func (s *Stats) Services() []Count {
 	return sortedCounts(s.byService)
+}
+
+// Errors is the number of ERROR and FATAL entries of service.
+func (s *Stats) Errors(service string) int {
+	return s.errorsByService[service]
 }
 
 func (s *Stats) MalformedReasons() []Count {

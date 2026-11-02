@@ -1,0 +1,606 @@
+{
+  "source": "testdata/sample.log",
+  "settings": {
+    "incident_window": "5m0s",
+    "anomaly_bucket": "1m0s"
+  },
+  "summary": {
+    "lines": 63,
+    "valid": 41,
+    "malformed": 6,
+    "skipped": 16,
+    "filtered_out": 0,
+    "first_entry": "2026-10-20T08:00:00Z",
+    "last_entry": "2026-10-20T08:35:00Z"
+  },
+  "health": [
+    {
+      "service": "inventory-service",
+      "score": 15,
+      "status": "critical",
+      "entries": 9,
+      "errors": 5,
+      "error_rate": 0.556,
+      "incidents": 3,
+      "anomalies": 0,
+      "penalties": {
+        "errors": 40,
+        "incidents": 45,
+        "anomalies": 0
+      }
+    },
+    {
+      "service": "payment-service",
+      "score": 15,
+      "status": "critical",
+      "entries": 12,
+      "errors": 7,
+      "error_rate": 0.583,
+      "incidents": 3,
+      "anomalies": 0,
+      "penalties": {
+        "errors": 40,
+        "incidents": 45,
+        "anomalies": 0
+      }
+    },
+    {
+      "service": "auth-service",
+      "score": 52,
+      "status": "unhealthy",
+      "entries": 5,
+      "errors": 1,
+      "error_rate": 0.2,
+      "incidents": 1,
+      "anomalies": 0,
+      "penalties": {
+        "errors": 40,
+        "incidents": 8,
+        "anomalies": 0
+      }
+    },
+    {
+      "service": "order-service",
+      "score": 52,
+      "status": "unhealthy",
+      "entries": 8,
+      "errors": 1,
+      "error_rate": 0.125,
+      "incidents": 2,
+      "anomalies": 0,
+      "penalties": {
+        "errors": 25,
+        "incidents": 23,
+        "anomalies": 0
+      }
+    },
+    {
+      "service": "api-gateway",
+      "score": 60,
+      "status": "unhealthy",
+      "entries": 7,
+      "errors": 1,
+      "error_rate": 0.143,
+      "incidents": 2,
+      "anomalies": 0,
+      "penalties": {
+        "errors": 29,
+        "incidents": 11,
+        "anomalies": 0
+      }
+    }
+  ],
+  "levels": [
+    {
+      "name": "INFO",
+      "count": 17
+    },
+    {
+      "name": "WARN",
+      "count": 9
+    },
+    {
+      "name": "ERROR",
+      "count": 13
+    },
+    {
+      "name": "FATAL",
+      "count": 2
+    }
+  ],
+  "services": [
+    {
+      "name": "payment-service",
+      "count": 12
+    },
+    {
+      "name": "inventory-service",
+      "count": 9
+    },
+    {
+      "name": "order-service",
+      "count": 8
+    },
+    {
+      "name": "api-gateway",
+      "count": 7
+    },
+    {
+      "name": "auth-service",
+      "count": 5
+    }
+  ],
+  "malformed": {
+    "by_reason": [
+      {
+        "name": "bad timestamp",
+        "count": 3
+      },
+      {
+        "name": "unknown level",
+        "count": 2
+      },
+      {
+        "name": "missing fields",
+        "count": 1
+      }
+    ],
+    "examples": [
+      "line 32: bad timestamp: \"this\"",
+      "line 33: bad timestamp: \"2026-10-20\"",
+      "line 34: unknown level: \"CRITICAL\"",
+      "line 35: missing fields: want \u003ctimestamp\u003e \u003clevel\u003e \u003cservice\u003e \u003cmessage\u003e",
+      "line 36: unknown level: \"DEBUG\""
+    ]
+  },
+  "incidents": {
+    "overlap_policy": "first-match-by-priority",
+    "overlapping_entries": 12,
+    "rule_matches": [
+      {
+        "rule": "service-crash",
+        "severity": "CRITICAL",
+        "entries": 2
+      },
+      {
+        "rule": "out-of-memory",
+        "severity": "CRITICAL",
+        "entries": 2
+      },
+      {
+        "rule": "database-failure",
+        "severity": "HIGH",
+        "entries": 7
+      },
+      {
+        "rule": "auth-failure",
+        "severity": "MEDIUM",
+        "entries": 5
+      },
+      {
+        "rule": "timeout",
+        "severity": "MEDIUM",
+        "entries": 3
+      },
+      {
+        "rule": "error-burst",
+        "severity": "LOW",
+        "entries": 3
+      }
+    ],
+    "groups": [
+      {
+        "rule": "out-of-memory",
+        "severity": "CRITICAL",
+        "service": "inventory-service",
+        "count": 2,
+        "first_seen": "2026-10-20T08:20:00Z",
+        "last_seen": "2026-10-20T08:20:05Z",
+        "duration_seconds": 5,
+        "first_line": 45,
+        "samples": [
+          "Out of memory: cannot allocate 512MB buffer"
+        ]
+      },
+      {
+        "rule": "service-crash",
+        "severity": "CRITICAL",
+        "service": "inventory-service",
+        "count": 1,
+        "first_seen": "2026-10-20T08:20:06Z",
+        "last_seen": "2026-10-20T08:20:06Z",
+        "duration_seconds": 0,
+        "first_line": 47,
+        "samples": [
+          "Process killed: out of memory"
+        ]
+      },
+      {
+        "rule": "service-crash",
+        "severity": "CRITICAL",
+        "service": "payment-service",
+        "count": 1,
+        "first_seen": "2026-10-20T08:30:20Z",
+        "last_seen": "2026-10-20T08:30:20Z",
+        "duration_seconds": 0,
+        "first_line": 53,
+        "samples": [
+          "Cannot reach database after 10 retries, shutting down"
+        ]
+      },
+      {
+        "rule": "database-failure",
+        "severity": "HIGH",
+        "service": "payment-service",
+        "count": 4,
+        "first_seen": "2026-10-20T08:05:00Z",
+        "last_seen": "2026-10-20T08:06:30Z",
+        "duration_seconds": 90,
+        "first_line": 12,
+        "samples": [
+          "Database connection refused: postgres:5432",
+          "Query failed: deadlock detected on table payments"
+        ]
+      },
+      {
+        "rule": "database-failure",
+        "severity": "HIGH",
+        "service": "order-service",
+        "count": 1,
+        "first_seen": "2026-10-20T08:08:20Z",
+        "last_seen": "2026-10-20T08:08:20Z",
+        "duration_seconds": 0,
+        "first_line": 21,
+        "samples": [
+          "Database query timed out after 5000ms"
+        ]
+      },
+      {
+        "rule": "database-failure",
+        "severity": "HIGH",
+        "service": "payment-service",
+        "count": 2,
+        "first_seen": "2026-10-20T08:30:00Z",
+        "last_seen": "2026-10-20T08:30:15Z",
+        "duration_seconds": 15,
+        "first_line": 51,
+        "samples": [
+          "Database connection refused: postgres:5432"
+        ]
+      },
+      {
+        "rule": "timeout",
+        "severity": "MEDIUM",
+        "service": "order-service",
+        "count": 3,
+        "first_seen": "2026-10-20T08:08:00Z",
+        "last_seen": "2026-10-20T08:08:40Z",
+        "duration_seconds": 40,
+        "first_line": 19,
+        "samples": [
+          "Request timeout calling inventory-service after 30s",
+          "Upstream timed out: inventory-service"
+        ]
+      },
+      {
+        "rule": "auth-failure",
+        "severity": "MEDIUM",
+        "service": "auth-service",
+        "count": 4,
+        "first_seen": "2026-10-20T08:10:00Z",
+        "last_seen": "2026-10-20T08:11:00Z",
+        "duration_seconds": 60,
+        "first_line": 25,
+        "samples": [
+          "Authentication failed for user alice from 10.0.0.12",
+          "Permission denied: token expired for user bob"
+        ]
+      },
+      {
+        "rule": "auth-failure",
+        "severity": "MEDIUM",
+        "service": "api-gateway",
+        "count": 1,
+        "first_seen": "2026-10-20T08:10:30Z",
+        "last_seen": "2026-10-20T08:10:30Z",
+        "duration_seconds": 0,
+        "first_line": 28,
+        "samples": [
+          "Unauthorized request to /admin from 203.0.113.7"
+        ]
+      },
+      {
+        "rule": "error-burst",
+        "severity": "LOW",
+        "service": "inventory-service",
+        "count": 2,
+        "first_seen": "2026-10-20T08:15:00Z",
+        "last_seen": "2026-10-20T08:15:10Z",
+        "duration_seconds": 10,
+        "first_line": 40,
+        "samples": [
+          "Failed to parse SKU \"AB-12\"",
+          "Failed to parse SKU \"CD-34\""
+        ]
+      },
+      {
+        "rule": "error-burst",
+        "severity": "LOW",
+        "service": "api-gateway",
+        "count": 1,
+        "first_seen": "2026-10-20T08:16:00Z",
+        "last_seen": "2026-10-20T08:16:00Z",
+        "duration_seconds": 0,
+        "first_line": 42,
+        "samples": [
+          "Upstream returned 502 Bad Gateway"
+        ]
+      }
+    ]
+  },
+  "timeline": {
+    "start": "2026-10-20T08:00:00Z",
+    "bucket": "1m0s",
+    "rows": [
+      {
+        "name": "(all entries)",
+        "max": 5,
+        "counts": [
+          5,
+          3,
+          1,
+          0,
+          0,
+          3,
+          1,
+          1,
+          4,
+          0,
+          4,
+          1,
+          0,
+          0,
+          0,
+          2,
+          1,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          4,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "api-gateway",
+        "max": 1,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "auth-service",
+        "max": 1,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "inventory-service",
+        "max": 3,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "order-service",
+        "max": 1,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "payment-service",
+        "max": 3,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "anomalies": {
+    "ready_services": 5,
+    "total_services": 5,
+    "warmup_buckets": 10,
+    "out_of_order_entries": 0,
+    "found": []
+  }
+}

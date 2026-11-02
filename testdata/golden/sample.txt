@@ -1,0 +1,75 @@
+GhostOps report for testdata/sample.log
+Entries from 2026-10-20 08:00:00 to 08:35:00 UTC (35m)
+
+Lines: 63 total, 41 valid, 6 malformed, 16 blank or comment
+
+Service health (0-100, worst first)
+  inventory-service   15  critical   9 entries   5 errors  55.6%  3 incidents  0 anomalies  (-40 errors, -45 incidents)
+  payment-service     15  critical   12 entries  7 errors  58.3%  3 incidents  0 anomalies  (-40 errors, -45 incidents)
+  auth-service        52  unhealthy  5 entries   1 error   20.0%  1 incident   0 anomalies  (-40 errors, -8 incidents)
+  order-service       52  unhealthy  8 entries   1 error   12.5%  2 incidents  0 anomalies  (-25 errors, -23 incidents)
+  api-gateway         60  unhealthy  7 entries   1 error   14.3%  2 incidents  0 anomalies  (-29 errors, -11 incidents)
+
+Levels
+  INFO   17
+  WARN    9
+  ERROR  13
+  FATAL   2
+
+Services
+  payment-service    12
+  inventory-service   9
+  order-service       8
+  api-gateway         7
+  auth-service        5
+
+Malformed lines
+  bad timestamp   3
+  unknown level   2
+  missing fields  1
+  first examples:
+    line 32: bad timestamp: "this"
+    line 33: bad timestamp: "2026-10-20"
+    line 34: unknown level: "CRITICAL"
+    line 35: missing fields: want <timestamp> <level> <service> <message>
+    line 36: unknown level: "DEBUG"
+
+Incidents: 11 from 22 entries (12 entries matched more than one rule; the first rule wins)
+  CRITICAL  out-of-memory     inventory-service  2 entries  08:20:00 - 08:20:05  5s     line 45
+            Out of memory: cannot allocate 512MB buffer
+  CRITICAL  service-crash     inventory-service  1 entry    08:20:06 - 08:20:06  0s     line 47
+            Process killed: out of memory
+  CRITICAL  service-crash     payment-service    1 entry    08:30:20 - 08:30:20  0s     line 53
+            Cannot reach database after 10 retries, shutting down
+  HIGH      database-failure  payment-service    4 entries  08:05:00 - 08:06:30  1m30s  line 12
+            Database connection refused: postgres:5432
+            Query failed: deadlock detected on table payments
+  HIGH      database-failure  order-service      1 entry    08:08:20 - 08:08:20  0s     line 21
+            Database query timed out after 5000ms
+  HIGH      database-failure  payment-service    2 entries  08:30:00 - 08:30:15  15s    line 51
+            Database connection refused: postgres:5432
+  MEDIUM    timeout           order-service      3 entries  08:08:00 - 08:08:40  40s    line 19
+            Request timeout calling inventory-service after 30s
+            Upstream timed out: inventory-service
+  MEDIUM    auth-failure      auth-service       4 entries  08:10:00 - 08:11:00  1m     line 25
+            Authentication failed for user alice from 10.0.0.12
+            Permission denied: token expired for user bob
+  MEDIUM    auth-failure      api-gateway        1 entry    08:10:30 - 08:10:30  0s     line 28
+            Unauthorized request to /admin from 203.0.113.7
+  LOW       error-burst       inventory-service  2 entries  08:15:00 - 08:15:10  10s    line 40
+            Failed to parse SKU "AB-12"
+            Failed to parse SKU "CD-34"
+  LOW       error-burst       api-gateway        1 entry    08:16:00 - 08:16:00  0s     line 42
+            Upstream returned 502 Bad Gateway
+
+Timeline from 08:00:00 to 08:36:00, one column = 1m (first row: all entries, then errors per service)
+  (all entries)      █▅▂··▅▂▂▇·▇▂···▄▂···▇·········▅▂▇▂▂▂  max 5
+  api-gateway        ················█···················  max 1
+  auth-service       ···········█························  max 1
+  inventory-service  ···············▆····█···············  max 3
+  order-service      ········█···························  max 1
+  payment-service    ·····█▃·······················█·····  max 3
+
+Anomalies (compared with each service's own history, 1m buckets)
+  5 of 5 services had enough history.
+  No anomalies found.

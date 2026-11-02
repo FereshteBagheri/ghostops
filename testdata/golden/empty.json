@@ -1,0 +1,86 @@
+{
+  "source": "testdata/empty.log",
+  "settings": {
+    "incident_window": "5m0s",
+    "anomaly_bucket": "1m0s"
+  },
+  "summary": {
+    "lines": 0,
+    "valid": 0,
+    "malformed": 0,
+    "skipped": 0,
+    "filtered_out": 0
+  },
+  "health": [],
+  "levels": [
+    {
+      "name": "INFO",
+      "count": 0
+    },
+    {
+      "name": "WARN",
+      "count": 0
+    },
+    {
+      "name": "ERROR",
+      "count": 0
+    },
+    {
+      "name": "FATAL",
+      "count": 0
+    }
+  ],
+  "services": [],
+  "malformed": {
+    "by_reason": [],
+    "examples": []
+  },
+  "incidents": {
+    "overlap_policy": "first-match-by-priority",
+    "overlapping_entries": 0,
+    "rule_matches": [
+      {
+        "rule": "service-crash",
+        "severity": "CRITICAL",
+        "entries": 0
+      },
+      {
+        "rule": "out-of-memory",
+        "severity": "CRITICAL",
+        "entries": 0
+      },
+      {
+        "rule": "database-failure",
+        "severity": "HIGH",
+        "entries": 0
+      },
+      {
+        "rule": "auth-failure",
+        "severity": "MEDIUM",
+        "entries": 0
+      },
+      {
+        "rule": "timeout",
+        "severity": "MEDIUM",
+        "entries": 0
+      },
+      {
+        "rule": "error-burst",
+        "severity": "LOW",
+        "entries": 0
+      }
+    ],
+    "groups": []
+  },
+  "timeline": {
+    "bucket": "1m0s",
+    "rows": []
+  },
+  "anomalies": {
+    "ready_services": 0,
+    "total_services": 0,
+    "warmup_buckets": 10,
+    "out_of_order_entries": 0,
+    "found": []
+  }
+}
