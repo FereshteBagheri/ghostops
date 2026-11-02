@@ -12,8 +12,8 @@ import (
 	"slices"
 	"time"
 
-	"ghostops/baseline"
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/baseline"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 const Overall = "(all services)"

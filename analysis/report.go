@@ -6,10 +6,10 @@ import (
 	"slices"
 	"time"
 
-	"ghostops/anomaly"
-	"ghostops/detect"
-	"ghostops/health"
-	"ghostops/report"
+	"github.com/FereshteBagheri/ghostops/anomaly"
+	"github.com/FereshteBagheri/ghostops/detect"
+	"github.com/FereshteBagheri/ghostops/health"
+	"github.com/FereshteBagheri/ghostops/report"
 )
 
 const overlapPolicy = "first-match-by-priority"

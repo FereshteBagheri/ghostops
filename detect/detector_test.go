@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 func entry(level logentry.Level, msg string) logentry.Entry {

@@ -4,7 +4,7 @@ import (
 	"slices"
 	"time"
 
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 // Filter limits the analysis to some services and/or a time range.

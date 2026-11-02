@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"ghostops/analysis"
-	"ghostops/anomaly"
-	"ghostops/atomicfile"
-	"ghostops/detect"
-	"ghostops/report"
+	"github.com/FereshteBagheri/ghostops/analysis"
+	"github.com/FereshteBagheri/ghostops/anomaly"
+	"github.com/FereshteBagheri/ghostops/atomicfile"
+	"github.com/FereshteBagheri/ghostops/detect"
+	"github.com/FereshteBagheri/ghostops/report"
 )
 
 const (

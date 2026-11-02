@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 var t0 = time.Date(2026, 10, 20, 8, 0, 0, 0, time.UTC)

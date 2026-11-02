@@ -5,11 +5,11 @@ import (
 	"io"
 	"time"
 
-	"ghostops/anomaly"
-	"ghostops/detect"
-	"ghostops/linescan"
-	"ghostops/logentry"
-	"ghostops/timeline"
+	"github.com/FereshteBagheri/ghostops/anomaly"
+	"github.com/FereshteBagheri/ghostops/detect"
+	"github.com/FereshteBagheri/ghostops/linescan"
+	"github.com/FereshteBagheri/ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/timeline"
 )
 
 // AllEntries is the timeline row that counts every entry; the other rows count errors per service.

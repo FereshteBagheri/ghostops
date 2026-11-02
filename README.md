@@ -7,7 +7,7 @@ size of the file does not matter. Only the Go standard library is used.
 
 ## Build and run
 
-Requires Go 1.27 or newer (see `go.mod`).
+Requires Go 1.23 or newer (see `go.mod`).
 
 ```bash
 go build -o ghostops .

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"ghostops/detect"
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/detect"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 func TestFilterMatch(t *testing.T) {

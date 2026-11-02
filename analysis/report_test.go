@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"ghostops/detect"
-	"ghostops/report"
+	"github.com/FereshteBagheri/ghostops/detect"
+	"github.com/FereshteBagheri/ghostops/report"
 )
 
 func TestReport(t *testing.T) {

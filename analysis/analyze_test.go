@@ -9,8 +9,8 @@ import (
 	"testing"
 	"testing/iotest"
 
-	"ghostops/detect"
-	"ghostops/linescan"
+	"github.com/FereshteBagheri/ghostops/detect"
+	"github.com/FereshteBagheri/ghostops/linescan"
 )
 
 const input = `# comment

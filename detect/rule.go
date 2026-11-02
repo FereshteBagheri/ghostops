@@ -3,7 +3,7 @@ package detect
 import (
 	"strings"
 
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 type Rule interface {

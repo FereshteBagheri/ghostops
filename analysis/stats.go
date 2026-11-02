@@ -6,7 +6,7 @@ import (
 	"slices"
 	"time"
 
-	"ghostops/logentry"
+	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
 const maxMalformedExamples = 5

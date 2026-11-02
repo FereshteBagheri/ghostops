@@ -1,3 +1,5 @@
 /ghostops
 /genlog
 /*.json
+*.out
+coverage.*
