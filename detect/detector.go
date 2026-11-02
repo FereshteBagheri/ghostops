@@ -34,7 +34,6 @@ func (i Incident) Duration() time.Duration {
 	return i.LastSeen.Sub(i.FirstSeen)
 }
 
-// Classify returns the first matching rule (nil if none) and how many rules matched.
 func Classify(e logentry.Entry, rules []Rule) (Rule, int) {
 	var first Rule
 	matches := 0
@@ -55,8 +54,6 @@ type groupKey struct {
 	service string
 }
 
-// Detector groups matching entries into incidents per rule and service.
-// A new incident starts after window has passed without a matching entry.
 type Detector struct {
 	rules       []Rule
 	window      time.Duration
@@ -66,7 +63,6 @@ type Detector struct {
 	Overlapping int
 }
 
-// NewDetector uses DefaultWindow if window is not positive.
 func NewDetector(rules []Rule, window time.Duration) *Detector {
 	if window <= 0 {
 		window = DefaultWindow
@@ -131,7 +127,6 @@ func (d *Detector) Counts() []RuleCount {
 	return counts
 }
 
-// Incidents are sorted by severity, then time, service and rule.
 func (d *Detector) Incidents() []Incident {
 	incidents := make([]Incident, 0, len(d.closed)+len(d.open))
 	for _, inc := range d.closed {

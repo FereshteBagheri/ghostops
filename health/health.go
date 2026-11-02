@@ -1,4 +1,3 @@
-// Package health turns a few counts about a service into a score from 0 to 100.
 package health
 
 import "math"
@@ -11,9 +10,8 @@ const (
 
 type Input struct {
 	Entries int
-	Errors  int // ERROR and FATAL entries
+	Errors  int
 
-	// incidents by severity
 	Critical int
 	High     int
 	Medium   int
@@ -31,8 +29,6 @@ type Result struct {
 	AnomalyPenalty  int
 }
 
-// Score starts at 100 and takes points off for errors, incidents and anomalies.
-// Each part has its own cap, so one bad thing can't hide everything else.
 func Score(in Input) Result {
 	var r Result
 	if in.Entries > 0 {

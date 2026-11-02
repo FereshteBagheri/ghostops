@@ -13,7 +13,6 @@ type stream struct {
 	entries []logentry.Entry
 }
 
-// minute adds n entries of the given level for service, spread over minute m.
 func (s *stream) minute(m int, service string, level logentry.Level, n int) *stream {
 	for i := range n {
 		at := t0.Add(time.Duration(m)*time.Minute + time.Duration(i)*time.Second)
@@ -22,7 +21,6 @@ func (s *stream) minute(m int, service string, level logentry.Level, n int) *str
 	return s
 }
 
-// steady adds normal traffic: 8-12 INFO lines and 0-1 ERROR per minute.
 func (s *stream) steady(from, to int, service string) *stream {
 	for m := from; m < to; m++ {
 		s.minute(m, service, logentry.Info, 8+m%5)

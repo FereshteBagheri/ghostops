@@ -14,8 +14,6 @@ import (
 
 const overlapPolicy = "first-match-by-priority"
 
-// Report turns the result into the report model. Every slice is non-nil so
-// empty sections are written as [] in JSON, not null.
 func (res *Result) Report(source string) report.Report {
 	s := res.Stats
 	cfg := res.Anomalies.Config()
@@ -90,7 +88,6 @@ func (res *Result) Report(source string) report.Report {
 	return r
 }
 
-// health scores every service, worst first.
 func (res *Result) health() []report.Health {
 	inputs := make(map[string]*health.Input)
 	input := func(service string) *health.Input {

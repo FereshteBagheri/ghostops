@@ -49,7 +49,7 @@ func TestClassifyDefaultRules(t *testing.T) {
 	tests := []struct {
 		name        string
 		entry       logentry.Entry
-		wantRule    string // "" means no rule
+		wantRule    string
 		wantMatches int
 	}{
 		{"fatal also matches the catch-all", entry(logentry.Fatal, "Process killed"), "service-crash", 2},

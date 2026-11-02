@@ -55,8 +55,6 @@ func parseArgs(args []string, stderr io.Writer) (config, error) {
 		fs.PrintDefaults()
 	}
 
-	// flag stops at the first non-flag argument, so keep parsing after each
-	// one; that way "ghostops app.log -o out.json" works too.
 	var positional []string
 	for {
 		if err := fs.Parse(args); err != nil {
@@ -128,7 +126,6 @@ func parseTime(name, value string) (time.Time, error) {
 	return t.UTC(), nil
 }
 
-// gzipFile closes both the gzip reader and the file under it.
 type gzipFile struct {
 	*gzip.Reader
 	file *os.File
@@ -196,7 +193,6 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "run 'ghostops -h' for help")
 		return exitUsage
 	case err != nil:
-		// the flag package has already printed the problem and the usage
 		return exitUsage
 	}
 

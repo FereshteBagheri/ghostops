@@ -86,7 +86,7 @@ func TestExitCodes(t *testing.T) {
 		args     []string
 		want     int
 		wantErr  string
-		wantNone bool // nothing on stdout
+		wantNone bool
 	}{
 		{"no arguments", nil, exitUsage, "expected exactly 1 log file", true},
 		{"two files", []string{"a.log", "b.log"}, exitUsage, "got 2", true},

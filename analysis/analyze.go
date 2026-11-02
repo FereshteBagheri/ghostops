@@ -12,12 +12,10 @@ import (
 	"github.com/FereshteBagheri/ghostops/timeline"
 )
 
-// AllEntries is the timeline row that counts every entry; the other rows count errors per service.
 const AllEntries = "(all entries)"
 
 const timelineBuckets = 60
 
-// Observer is anything that wants to see every valid entry once, in file order.
 type Observer interface {
 	Observe(e logentry.Entry)
 }

@@ -1,9 +1,3 @@
-// Package anomaly learns how busy each service normally is and reports time
-// periods that look very different from that.
-//
-// Time is cut into fixed buckets (one minute by default). For every service,
-// and for all services together, each finished bucket is compared with the
-// buckets seen before it, then added to that history.
 package anomaly
 
 import (
@@ -18,7 +12,6 @@ import (
 
 const Overall = "(all services)"
 
-// After this many empty buckets in a row, more zeros don't tell us anything new.
 const maxIdleBuckets = 60
 
 type Kind int
@@ -44,10 +37,10 @@ func (k Kind) String() string {
 
 type Config struct {
 	Bucket         time.Duration
-	Warmup         int     // buckets of history needed before judging
-	MinCount       int     // smaller counts are never a spike
-	Threshold      float64 // z-score needed to call a bucket abnormal
-	SilenceBuckets int     // empty buckets in a row that count as silence
+	Warmup         int
+	MinCount       int
+	Threshold      float64
+	SilenceBuckets int
 }
 
 func DefaultConfig() Config {
@@ -65,10 +58,10 @@ type Anomaly struct {
 	Kind    Kind
 	Start   time.Time
 	End     time.Time
-	Peak    int     // highest count in one bucket (0 for silence)
-	Mean    float64 // normal count per bucket
+	Peak    int
+	Mean    float64
 	StdDev  float64
-	Score   float64 // how many standard deviations away from normal
+	Score   float64
 }
 
 type series struct {
@@ -94,7 +87,6 @@ type Detector struct {
 	OutOfOrder int
 }
 
-// NewDetector fills any zero field of cfg from DefaultConfig.
 func NewDetector(cfg Config) *Detector {
 	def := DefaultConfig()
 	if cfg.Bucket <= 0 {
@@ -129,8 +121,6 @@ func (d *Detector) Observe(e logentry.Entry) {
 	d.add(d.get(Overall), e)
 }
 
-// Finish closes the last buckets and returns every anomaly sorted by start time.
-// Entries observed after Finish are ignored.
 func (d *Detector) Finish() []Anomaly {
 	if !d.finished {
 		d.finished = true
@@ -153,7 +143,6 @@ func (d *Detector) Finish() []Anomaly {
 	return slices.Clone(d.found)
 }
 
-// Ready reports how many services have enough history to be judged.
 func (d *Detector) Ready() (ready, total int) {
 	for name, s := range d.series {
 		if name == Overall {
@@ -183,7 +172,6 @@ func (d *Detector) add(s *series, e logentry.Entry) (late bool) {
 		s.started = true
 		s.bucket = b
 	case b.Before(s.bucket):
-		// counted in the current bucket; we can't go back in time
 		late = true
 	case b.After(s.bucket):
 		d.advance(s, b)
@@ -236,8 +224,6 @@ func (d *Detector) closeBucket(s *series) {
 	s.errors, s.other = 0, 0
 }
 
-// check compares one bucket's count with the history. Abnormal buckets are not
-// added to the history, so a long outage doesn't become the new normal.
 func (d *Detector) check(s *series, kind Kind, n int, base *baseline.Running) bool {
 	z := base.ZScore(float64(n), 1)
 	abnormal := base.N() >= d.cfg.Warmup && n >= d.cfg.MinCount && z >= d.cfg.Threshold

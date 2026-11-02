@@ -1,8 +1,3 @@
-// Command genlog writes a fake but realistic log to standard output.
-// The same flags and seed always produce the same file.
-//
-//	go run ./tools/genlog -minutes 120 -inject > testdata/anomaly.log
-//	go run ./tools/genlog -minutes 500000 -errors 0 | ./ghostops -
 package main
 
 import (
@@ -25,7 +20,7 @@ type line struct {
 
 type message struct {
 	format string
-	max    int // the %d in format is a random number from 1 to max
+	max    int
 }
 
 var messages = map[string][]message{
@@ -106,7 +101,6 @@ func main() {
 	}
 }
 
-// injected changes the normal amount of traffic at a few fixed moments.
 func injected(minute int, service string, n int) (lines, errors int) {
 	switch {
 	case service == "api-gateway" && minute == 40:

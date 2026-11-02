@@ -51,7 +51,6 @@ func TestGroupingWindow(t *testing.T) {
 }
 
 func TestGapIsMeasuredFromLastEntry(t *testing.T) {
-	// Entries 4 minutes apart keep one incident going for 12 minutes.
 	got := observeAll(NewDetector(DefaultRules(), 5*time.Minute),
 		at(0, 1, logentry.Error, "pay", "database down"),
 		at(4, 2, logentry.Error, "pay", "database down"),

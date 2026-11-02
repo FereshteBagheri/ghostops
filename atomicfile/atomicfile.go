@@ -1,5 +1,3 @@
-// Package atomicfile writes files so that readers see either the old file or
-// the complete new one, never a half-written file.
 package atomicfile
 
 import (
@@ -9,8 +7,6 @@ import (
 	"path/filepath"
 )
 
-// WriteFile calls write with a temporary file in the same directory as path,
-// then renames it to path. If anything fails, path is left untouched.
 func WriteFile(path string, write func(w io.Writer) error) (err error) {
 	tmp, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".tmp-*")
 	if err != nil {

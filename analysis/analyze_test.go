@@ -27,7 +27,6 @@ garbage
 2026-10-20T08:07:00Z INFO cache started
 `
 
-// stats runs Analyze with the default rules and returns only the Stats.
 func stats(r io.Reader) (*Stats, error) {
 	res, err := Analyze(r, Options{Rules: detect.DefaultRules()})
 	if err != nil {

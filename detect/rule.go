@@ -12,8 +12,6 @@ type Rule interface {
 	Match(e logentry.Entry) bool
 }
 
-// KeywordRule matches entries at minLevel or above whose message contains one
-// of the keywords (case-insensitive). Without keywords every message matches.
 type KeywordRule struct {
 	name     string
 	severity Severity
@@ -53,7 +51,6 @@ func (r KeywordRule) Match(e logentry.Entry) bool {
 	return false
 }
 
-// DefaultRules are in priority order: when several rules match, the first one wins.
 func DefaultRules() []Rule {
 	return []Rule{
 		NewKeywordRule("service-crash", Critical, logentry.Fatal),

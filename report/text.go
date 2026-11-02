@@ -9,8 +9,6 @@ import (
 
 type Text struct{}
 
-// printer remembers the first write error so the rendering code doesn't
-// need an if after every line. Render returns that error at the end.
 type printer struct {
 	w   io.Writer
 	err error
@@ -188,7 +186,6 @@ func writeTimeline(p *printer, tl Timeline, clock string) {
 
 var sparks = []rune("▁▂▃▄▅▆▇█")
 
-// sparkline draws each count as a bar scaled to max; zero is a dot so gaps stand out.
 func sparkline(counts []int, max int) string {
 	var b strings.Builder
 	for _, n := range counts {
@@ -250,7 +247,6 @@ func incidentDuration(g Incident) string {
 	return shortDuration(d)
 }
 
-// shortDuration prints 5m instead of 5m0s and 1h instead of 1h0m0s.
 func shortDuration(d time.Duration) string {
 	s := d.String()
 	if strings.HasSuffix(s, "m0s") {

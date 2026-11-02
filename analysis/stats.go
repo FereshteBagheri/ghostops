@@ -29,7 +29,6 @@ type Stats struct {
 	Malformed int
 	Filtered  int
 
-	// time of the earliest and latest valid entry
 	First time.Time
 	Last  time.Time
 
@@ -97,7 +96,6 @@ func (s *Stats) Services() []Count {
 	return sortedCounts(s.byService)
 }
 
-// Errors is the number of ERROR and FATAL entries of service.
 func (s *Stats) Errors(service string) int {
 	return s.errorsByService[service]
 }

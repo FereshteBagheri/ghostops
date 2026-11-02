@@ -1,5 +1,3 @@
-// Package report holds the finished analysis in a form that is easy to print
-// and to encode, and renders it as text or JSON.
 package report
 
 import (
@@ -114,7 +112,6 @@ type Penalties struct {
 	Anomalies int `json:"anomalies"`
 }
 
-// Timeline rows share one time axis: column i covers Start + i*Bucket.
 type Timeline struct {
 	Start  *time.Time    `json:"start,omitempty"`
 	Bucket string        `json:"bucket"`

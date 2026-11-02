@@ -61,7 +61,6 @@ func TestReportHealthAndTimeline(t *testing.T) {
 	}
 	r := res.Report("input.log")
 
-	// db has a FATAL and an ERROR (two incidents), api and cache have none
 	var order []string
 	for _, h := range r.Health {
 		order = append(order, h.Service)

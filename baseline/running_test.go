@@ -38,7 +38,6 @@ func TestZScoreFloor(t *testing.T) {
 	for range 20 {
 		r.Add(3)
 	}
-	// stddev is 0 here, so the floor decides the scale
 	if z := r.ZScore(5, 1); !near(z, 2) {
 		t.Errorf("ZScore = %v, want 2", z)
 	}

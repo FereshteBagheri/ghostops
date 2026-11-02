@@ -9,7 +9,7 @@ import (
 )
 
 type brokenWriter struct {
-	left int // bytes accepted before failing
+	left int
 }
 
 var errBroken = errors.New("pipe closed")

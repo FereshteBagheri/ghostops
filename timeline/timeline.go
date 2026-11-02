@@ -1,7 +1,3 @@
-// Package timeline counts events over time for several named rows that share
-// one time axis. The number of buckets never goes above a maximum: when time
-// runs past the last bucket, neighbouring buckets are merged and each bucket
-// becomes twice as wide.
 package timeline
 
 import (
@@ -19,7 +15,6 @@ type Timeline struct {
 	rows    map[string][]int
 }
 
-// New uses one minute and 60 buckets if width or maxBuckets are too small.
 func New(width time.Duration, maxBuckets int) *Timeline {
 	if width <= 0 {
 		width = time.Minute
@@ -30,7 +25,6 @@ func New(width time.Duration, maxBuckets int) *Timeline {
 	return &Timeline{width: width, max: maxBuckets, rows: make(map[string][]int)}
 }
 
-// Add counts one event for row name at time at.
 func (t *Timeline) Add(name string, at time.Time) {
 	if !t.started {
 		t.started = true
@@ -51,7 +45,6 @@ func (t *Timeline) Add(name string, at time.Time) {
 	t.length = max(t.length, i+1)
 }
 
-// Touch makes sure row name exists, even if it never gets an event.
 func (t *Timeline) Touch(name string) {
 	if _, ok := t.rows[name]; !ok {
 		t.rows[name] = nil
@@ -66,7 +59,6 @@ func (t *Timeline) Width() time.Duration {
 	return t.width
 }
 
-// Len is the number of buckets in use.
 func (t *Timeline) Len() int {
 	return t.length
 }
@@ -75,7 +67,6 @@ func (t *Timeline) Names() []string {
 	return slices.Sorted(maps.Keys(t.rows))
 }
 
-// Row returns a copy of the counts for name, Len buckets long.
 func (t *Timeline) Row(name string) []int {
 	row := make([]int, t.length)
 	copy(row, t.rows[name])

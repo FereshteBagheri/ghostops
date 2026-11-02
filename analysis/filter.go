@@ -7,12 +7,10 @@ import (
 	"github.com/FereshteBagheri/ghostops/logentry"
 )
 
-// Filter limits the analysis to some services and/or a time range.
-// The zero Filter lets everything through.
 type Filter struct {
 	Services []string
-	Since    time.Time // inclusive
-	Until    time.Time // exclusive
+	Since    time.Time
+	Until    time.Time
 }
 
 func (f Filter) Match(e logentry.Entry) bool {

@@ -52,7 +52,7 @@ func TestMerge(t *testing.T) {
 		tl.Add("api", at(float64(m)))
 	}
 	tl.Add("db", at(1))
-	tl.Add("api", at(4)) // doesn't fit in 4 one-minute buckets
+	tl.Add("api", at(4))
 
 	if tl.Width() != 2*time.Minute {
 		t.Fatalf("width = %v, want 2m", tl.Width())

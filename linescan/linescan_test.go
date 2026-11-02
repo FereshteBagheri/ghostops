@@ -9,7 +9,6 @@ import (
 	"testing/iotest"
 )
 
-// readAll scans everything and returns the lines and their numbers.
 func readAll(s *Scanner) (lines []string, numbers []int) {
 	for s.Scan() {
 		lines = append(lines, s.Text())
@@ -59,7 +58,7 @@ func TestMaxLineSize(t *testing.T) {
 		name     string
 		input    string
 		wantErr  bool
-		wantRead int // lines read successfully before stopping
+		wantRead int
 	}{
 		{"exactly max", strings.Repeat("x", max) + "\n", false, 1},
 		{"exactly max with CRLF", strings.Repeat("x", max) + "\r\n", false, 1},
