@@ -1,19 +1,73 @@
 # GhostOps
 
+[![CI](https://github.com/FereshteBagheri/ghostops/actions/workflows/ci.yml/badge.svg)](https://github.com/FereshteBagheri/ghostops/actions/workflows/ci.yml)
+
 GhostOps is a command-line tool that reads an application log, counts what is in it,
 finds incidents with a set of predefined rules and reports services that behave
 differently from their own history. It reads the log one line at a time, so the
 size of the file does not matter. Only the Go standard library is used.
 
-## Build and run
+## Background
+
+GhostOps started as an assignment in a Go bootcamp. The brief asked for a CLI
+that streams a log, counts entries by level and service, groups rule matches
+into incidents, handles overlapping rules and malformed lines, and writes a
+text and a JSON report.
+
+Beyond the brief I added:
+
+- anomaly detection that learns each service's normal rate online (Welford's
+  algorithm) and reports error spikes, traffic spikes and silences
+- a 0-100 health score per service that can be explained from its parts
+- a timeline whose memory stays fixed however long the log is
+- `-service`, `-since`, `-until` filters, `.gz` and stdin input, and
+  `-fail-on` so the tool can fail a CI job
+- JSON output that is never half-written, and an exit code for every kind of failure
+- fuzz tests and benchmarks
+
+## Highlights
+
+- **Bounded memory.** O(n) time in the number of lines; memory depends only on
+  the number of services, incident groups and anomalies. 20 million lines
+  (1.3 GB) with no incidents peak at under 10 MB (see [Decisions](#decisions)).
+- **Online statistics.** Mean and variance are updated per bucket without
+  storing history, and abnormal buckets are kept out of the baseline.
+- **Deterministic output.** Same input, same report, byte for byte.
+- **Errors as values.** Bad lines are data and get counted; failures stop the
+  program with no report, never a partial one.
+- **Small interfaces.** Only where there is more than one implementation.
+- **Tests.** Table-driven tests, golden files, fuzzing of the parser, the line
+  scanner and the whole pipeline, and the race detector in CI.
+
+## Quick start
 
 Requires Go 1.23 or newer (see `go.mod`).
+
+```bash
+go install github.com/FereshteBagheri/ghostops@latest
+```
+
+or from a clone:
 
 ```bash
 go build -o ghostops .
 ./ghostops testdata/sample.log
 ./ghostops -o report.json testdata/sample.log    # text on screen + JSON file
 go test ./...
+```
+
+The start of the report for `testdata/sample.log` (full output in `docs/example-output.txt`):
+
+```
+GhostOps report for testdata/sample.log
+Entries from 2026-10-20 08:00:00 to 08:35:00 UTC (35m)
+
+Lines: 63 total, 41 valid, 6 malformed, 16 blank or comment
+
+Service health (0-100, worst first)
+  inventory-service   15  critical   9 entries   5 errors  55.6%  3 incidents  0 anomalies  (-40 errors, -45 incidents)
+  payment-service     15  critical   12 entries  7 errors  58.3%  3 incidents  0 anomalies  (-40 errors, -45 incidents)
+  auth-service        52  unhealthy  5 entries   1 error   20.0%  1 incident   0 anomalies  (-40 errors, -8 incidents)
 ```
 
 ## Usage
@@ -131,9 +185,12 @@ bucket is finished its counts are compared with that service's earlier buckets
 using the mean and standard deviation, kept with Welford's running algorithm, so no
 old buckets are stored. A bucket is abnormal when the service has at least 10
 buckets of history, the count is at least 5, and it is at least 3 standard
-deviations above the mean. Abnormal buckets are not added to the history, so a
-long outage does not become "normal". Consecutive abnormal buckets are reported
-as one anomaly.
+deviations above the mean. The standard deviation is never taken as less than
+1, so a very steady service doesn't get a huge score for a small change.
+Abnormal buckets are not added to the history, so a long outage does not become
+"normal". Consecutive abnormal buckets are reported as one anomaly. A gap in the
+log adds empty buckets to the history, at most 60 in a row; after that more
+zeros don't tell anything new.
 
 Limits: a service needs about 10 buckets of history before it is judged, so short
 logs report "not enough history" instead of guessing. The log is expected to be
@@ -279,14 +336,59 @@ end of input ─► analysis.Result.Report() ─► report.Text / report.JSON
 
 ```bash
 go test ./...                 # all packages
+go test -race ./...           # with the race detector
 go test . -update             # rewrite the golden files after an intended change
+go test -run '^$' -fuzz FuzzParse ./logentry
+go test -run '^$' -bench . -benchmem ./logentry ./analysis
 ```
 
 - table-driven tests for parsing, rules, overlaps, grouping windows, filters
 - golden files in `testdata/golden/` for the full text and JSON reports
 - every exit code of the CLI, stdin, gzip, flags after the file name
 - read errors in the middle of the input, lines that are too long, outputs that can't be written
+- fuzz tests:
+  - `FuzzParse`: any input is either a valid entry or a `*ParseError` that wraps exactly one sentinel
+  - `FuzzScan`: the line scanner agrees with `strings.Split`
+  - `FuzzAnalyze`: nothing panics, and every line is counted exactly once (valid, skipped, malformed or filtered)
+
+Coverage is about 91 % of statements across packages (`go test -coverpkg=./... ./...`).
+
+Benchmarks on an Intel i5-10300H:
+
+| Benchmark | Result |
+|-----------|--------|
+| `BenchmarkParse` | 180 ns per line, 0 allocations |
+| `BenchmarkAnalyze` (`testdata/anomaly.log`, 4 897 lines) | 2.8 ms, about 1.7 million lines/s, 120 MB/s |
+
+`Analyze` is faster than the CLI figure above because it doesn't read from
+disk or render a report.
 
 Test logs: `testdata/sample.log` (hand-written, every rule, overlaps and malformed
 lines), `testdata/anomaly.log` (generated with
 `go run ./tools/genlog -minutes 120 -inject`), `testdata/empty.log`.
+
+## Limitations and future work
+
+- **Order.** Grouping and anomaly buckets assume the log is roughly in time
+  order. Merged logs from several hosts would need a small reordering buffer
+  first.
+- **The anomaly model.** A z-score assumes counts are roughly normal. For
+  low-rate series that is not true, so the detector needs a minimum count and
+  a minimum standard deviation. A Poisson model, or a robust baseline (median
+  and MAD) or an exponentially weighted mean that follows slow trends would fit
+  better.
+- **Rules are code.** The built-in rules are compiled in; loading them from a
+  file would need no change to the detector, only a new `Rule` implementation.
+- **One goroutine.** Parsing could be spread over several goroutines with the
+  results put back in order, but at about 700 000 lines per second the program is
+  usually limited by the disk.
+
+## References
+
+- B. P. Welford, "Note on a method for calculating corrected sums of squares
+  and products", *Technometrics* 4(3), 1962, pp. 419-420.
+- D. E. Knuth, *The Art of Computer Programming*, Vol. 2, 3rd ed., section 4.2.2.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
